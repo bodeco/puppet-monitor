@@ -23,16 +23,16 @@ Puppet::Type.type(:monitor_log).provide(:default) do
     dirname = path.dirname
     basename = path.basename
 
-    pattern = Rexexp.new(@resoure[:pattern])
+    match = Regexp.new(@resource[:match])
 
     log = File.open(path, 'r')
 
     listen = Listen.to(dirname, only: /^#{basename}$/) do |m, a, r|
       data = log.read
-      return if @match = data =~ pattern
+      return if @match = data =~ match
     end
 
-    @match = log.read =~ pattern
+    @match = log.read =~ match
 
     if @match
       return true
@@ -43,6 +43,6 @@ Puppet::Type.type(:monitor_log).provide(:default) do
 
     return @match
   ensure
-    log.close
+    log.close if log
   end
 end
